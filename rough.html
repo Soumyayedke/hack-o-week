@@ -1,0 +1,334 @@
+
+<!--js script-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institute FAQ Assistant</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --light-bg: #f4f7fa;
+            --bot-bg: #e9f2ff;
+            --user-bg: #4a90e2;
+            --text-light: #ffffff;
+            --border: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh; /* Better support for mobile viewports */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            padding: 20px 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 1.8rem);
+        }
+
+        header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: clamp(0.9rem, 4vw, 1rem);
+        }
+
+        .quick-questions {
+            padding: 12px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: #f9fcff;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .quick-btn {
+            background: #eef4ff;
+            border: 1px solid #c9ddff;
+            color: var(--primary);
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .quick-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            align-self: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .bot {
+            background: var(--bot-bg);
+            border-bottom-left-radius: 4px;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: var(--user-bg);
+            color: var(--text-light);
+            border-bottom-right-radius: 4px;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 12px 16px;
+            background: #f9fbfd;
+            border-top: 1px solid #eee;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        #user-input:focus {
+            border-color: var(--primary);
+        }
+
+        button#send-btn {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            min-width: 60px;
+        }
+
+        button#send-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                height: 100vh;
+                height: 100dvh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            header {
+                padding: 16px;
+            }
+
+            .quick-questions {
+                padding: 10px 12px;
+                gap: 8px;
+            }
+
+            .quick-btn {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+
+            .chat-container {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .message {
+                max-width: 90%;
+                padding: 10px 14px;
+                font-size: 0.95rem;
+            }
+
+            .input-area {
+                padding: 10px 12px;
+            }
+
+            #user-input {
+                padding: 12px 16px;
+                font-size: 1rem; /* Prevents zoom on iOS */
+            }
+
+            button#send-btn {
+                padding: 12px 20px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar styling (optional) */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Institute FAQ Assistant</h1>
+            <p>Ask me anything about timings, fees, courses, admissions, and more!</p>
+        </header>
+
+        <div class="quick-questions">
+            <button class="quick-btn" onclick="sendQuick('What are the timings?')">Timings</button>
+            <button class="quick-btn" onclick="sendQuick('What are the fees?')">Fees</button>
+            <button class="quick-btn" onclick="sendQuick('How can I contact you?')">Contact</button>
+            <button class="quick-btn" onclick="sendQuick('How to apply?')">Admissions</button>
+            <button class="quick-btn" onclick="sendQuick('What courses do you offer?')">Courses</button>
+            <button class="quick-btn" onclick="sendQuick('Do you provide scholarships?')">Scholarships</button>
+        </div>
+
+        <div id="chat-container" class="chat-container">
+            <div class="message bot">Hello! How can I help you with institute information today?</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your question here..." autocomplete="off">
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function getResponse(userInput) {
+            const input = userInput.toLowerCase().trim();
+
+            if (/hi|hello|hey/.test(input)) {
+                return "Hello! How can I help you with institute information today?";
+            }
+            if (/time|hours|open|schedule/.test(input)) {
+                return "The institute is open Monday to Friday, 9:00 AM to 5:00 PM.";
+            }
+            if (/fee|cost|price|tuition/.test(input)) {
+                return "Fees vary by course. Generally, it ranges from $500 to $2000 per semester.";
+            }
+            if (/contact|call|phone|email|address|location/.test(input)) {
+                return "You can reach us at 0712 619 2403 or visit us at 123 Education Lane.";
+            }
+            if (/apply|admission/.test(input)) {
+                return "Admissions are open for the Fall semester! Apply on our website's 'Join' page.";
+            }
+            if (/course|major|study|program/.test(input)) {
+                return "We offer programs in Data Science, Web Development, and Digital Marketing.";
+            }
+            if (/scholarship|financial aid/.test(input)) {
+                return "Yes, we offer merit-based scholarships. The deadline to apply is March 1st.";
+            }
+            if (/job|placement|career/.test(input)) {
+                return "Our placement cell helps students secure internships and full-time roles.";
+            }
+            if (/hostel|dorm|housing/.test(input)) {
+                return "On-campus housing is available for out-of-city students on a first-come basis.";
+            }
+            if (/teacher|faculty|professor/.test(input)) {
+                return "Our faculty consists of industry experts with over 10+ years of experience.";
+            }
+
+            return "I'm sorry, I didn't quite catch that. Could you ask about timings, fees, or contact info?";
+        }
+
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        function addMessage(text, type) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', type);
+            msgDiv.textContent = text;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text === '') return;
+
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            const response = getResponse(text);
+            setTimeout(() => addMessage(response, 'bot'), 400);
+        }
+
+        function sendQuick(question) {
+            addMessage(question, 'user');
+            const response = getResponse(question);
+            setTimeout(() => addMessage(response, 'bot'), 400);
+            userInput.focus();
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Focus input on load (great for mobile)
+        window.onload = () => userInput.focus();
+    </script>
+</body>
+</html>
